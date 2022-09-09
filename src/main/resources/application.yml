@@ -1,0 +1,13 @@
+spring:
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5452/postgres?currentSchema=magarusik
+    username: postgres
+    password: 1312
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
