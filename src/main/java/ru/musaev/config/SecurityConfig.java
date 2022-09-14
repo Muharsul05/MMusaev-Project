@@ -1,24 +1,27 @@
 package ru.musaev.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.musaev.service.MyUserDetailsService;
+import ru.musaev.service.UserService;
 import ru.musaev.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfiguration {
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenService tokenService;
-    private final MyUserDetailsService userDetailsService;
+    private final UserService userDetailsService;
 
-    public SecurityConfig(TokenService tokenService, MyUserDetailsService userDetailsService) {
+    public SecurityConfig(TokenService tokenService, UserService userDetailsService) {
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
     }
@@ -28,18 +31,18 @@ public class SecurityConfig extends WebSecurityConfiguration {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .mvcMatchers("/login").permitAll()
-                .anyRequest().authenticated()
+                    .httpBasic()
+                .and()
+                    .authorizeRequests()
+                    .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService),
                         UsernamePasswordAuthenticationFilter.class);
     }
+
+    @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder())
-//                .withUser("user").password(passwordEncoder().encode("12345"));//
-                auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Bean

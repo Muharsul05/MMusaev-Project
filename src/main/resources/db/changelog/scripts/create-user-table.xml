@@ -4,13 +4,17 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet id="create-user-table" author="MMusaev">
+        <createSequence sequenceName="user_sequence" startValue="1" incrementBy="1"/>
         <createTable remarks="Таблица с данными пользователей" tableName="user">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" defaultValueComputed="nextval('user_sequence')">>
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="username" type="varchar(64)" remarks="Имя"/>
+            <column name="username" type="varchar(64)" remarks="Логин"/>
             <column name="password" type="varchar(64)" remarks="Пароль"/>
             <column name="is_admin" type="boolean" remarks="Признак админа"/>
+
+            <column name="profile_photo" type="bytea" remarks="Фото профиля"/>
+            <column name="status" type="varchar(512)" remarks="Статус"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

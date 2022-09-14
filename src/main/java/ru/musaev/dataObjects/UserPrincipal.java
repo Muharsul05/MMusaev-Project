@@ -1,9 +1,10 @@
-package ru.musaev.models;
+package ru.musaev.dataObjects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
     private final User user;
@@ -14,7 +15,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return user.isAdmin() ? "ROLE_ADMIN" : null;
+            }
+        });
     }
 
     @Override

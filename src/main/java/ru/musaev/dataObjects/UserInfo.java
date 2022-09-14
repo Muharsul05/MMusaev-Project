@@ -1,4 +1,4 @@
-package ru.musaev.models;
+package ru.musaev.dataObjects;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

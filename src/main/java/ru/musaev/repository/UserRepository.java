@@ -1,8 +1,10 @@
 package ru.musaev.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import ru.musaev.models.User;
+import org.springframework.stereotype.Repository;
+import ru.musaev.dataObjects.User;
 
-public interface UserRepository extends CrudRepository<User,Long> {
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
     User findByUsername(String username);
 }

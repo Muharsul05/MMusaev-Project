@@ -3,16 +3,17 @@ package ru.musaev.service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.musaev.models.User;
-import ru.musaev.models.UserPrincipal;
+import ru.musaev.dataObjects.User;
+import ru.musaev.dataObjects.UserPrincipal;
 import ru.musaev.repository.UserRepository;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    public MyUserDetailsService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -23,5 +24,11 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
         return new UserPrincipal(user);
+    }
+
+    public void createUser(String login, String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+        User user = new User(login, encoder.encode(password), false);
+        userRepository.save(user);
     }
 }
